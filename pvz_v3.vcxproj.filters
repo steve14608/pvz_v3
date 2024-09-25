@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="basic.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="entity.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -26,10 +23,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="basic.h">
+    <ClInclude Include="entity.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="entity.h">
+    <ClInclude Include="basic.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

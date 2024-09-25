@@ -1,4 +1,4 @@
-#include "basic.h"
+#include "basic.hpp"
 #include <graphics.h>
 
 
@@ -8,11 +8,11 @@
 //Father class
 class Entity {
 public:
-	virtual bool skill() { return false; };//to-do
-	virtual bool motion() { return false; };//to-do
-	int getId() const {
-		return id;
-	}
+	virtual bool sound() { return false; };//to-do
+	virtual bool render() { return false; };//to-do
+	virtual bool attack(Pool<EntityUnit> a,Table b) { return false; };//to-do
+	virtual bool skill(Pool<EntityUnit> a, Table b) { return false; };//to-do
+	virtual bool motion(Pool<EntityUnit> a, Table b) { return false; };//to-do
 	Entities getType() const {
 		return type;
 	}
@@ -26,11 +26,10 @@ public:
 		return skillInterval;
 	}
 protected:
-	int id;
 	Entities type;
 	int maxHealth;
-	long attackInterval;
-	long skillInterval;
+	DWORD attackInterval;
+	DWORD skillInterval;
 }
 ;
 
@@ -53,19 +52,44 @@ public:
 	}
 	void refresh() {
 		currentHealth = (*refer).getHealth();
-		val0 = 0;
-		val1 = 0;
-		val2 = 0;
-		lastAttack = GetTickCount();
-		lastSkill = GetTickCount();
+		val[0] = 0;
+		val[1] = 0;
+		val[2] = 0;
+		lastAttack = GameTickControl::getTick();
+		lastSkill = lastAttack;
+	}
+	int getCurrentHealth()const {
+		return currentHealth;
+	}
+	int getVal(int index)const {
+		return val[index];
+	}
+	DWORD getLastAtk()const {
+		return lastAttack;
+	}
+	DWORD getLastSkl()const {
+		return lastSkill;
+	}
+	void changeCurHealth(int va) {
+		currentHealth += va;
+	}
+	void setVal(int index,int va) {
+		val[index] = va;
+	}
+	void setLastAck(DWORD ti) {
+		lastAttack = ti;
+	}
+	void setLastSkl(DWORD ti) {
+		lastSkill = ti;
+	}
+	Entity* getEntityRefer() {
+		return refer;
 	}
 private:
 	int currentHealth;
-	int val0;
-	int val1;
-	int val2;
-	long lastAttack;
-	long lastSkill;
+	int val[3];
+	DWORD lastAttack;
+	DWORD lastSkill;
 	Entity* refer;
 };
 
@@ -82,7 +106,16 @@ private:
 
 class Sunflower : public Entity {
 public:
-	
+	Sunflower() {
+		maxHealth = 10;
+		type = Entities::Sunflower;
+		skillInterval = 30;
+	}
+	bool skill(Pool<EntityUnit> a, Table b,EntityUnit selff) {
+		if (GameTickControl::getTick() - selff.getLastSkl() > skillInterval) {
+
+		}
+	}
 };
 
 
