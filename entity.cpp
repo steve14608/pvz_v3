@@ -3,13 +3,11 @@
 
 
 
-class EntityUnit;
 
 
 //Father class
 class Entity {
 public:
-	virtual bool attack(Pool<EntityUnit> pool ) { return false; };//to-do
 	virtual bool skill() { return false; };//to-do
 	virtual bool motion() { return false; };//to-do
 	int getId() const {
