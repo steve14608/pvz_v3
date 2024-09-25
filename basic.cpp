@@ -37,28 +37,11 @@ public:
 		return vec[type].empty();	
 	}
 	bool add(short type, std::pair<int, int> val) {
-		auto ve = &vec[type];
-		int s = 0;
-		int e = vec[type].size();
-		while (s > e) {
-			int mid = (s + e) / 2;
-			int z = (*ve)[mid].second;
-			if (z == val.second) {
-				(*ve).emplace((*ve).begin() + mid, val);
-				return true;
-			}
-			else if(z>val.second){
-				e = mid;
-			}
-			else {
-				s = mid;
-			}
-		}
-		if (s == e) {
-			(*ve).emplace((*ve).begin() + s, val);
-			return true;
-		}
-		return false;
+		bool iffound;
+		int an = sbig(type, val.second, &iffound);
+		if (iffound) vec[type].emplace(vec[type].begin() + an, val);
+		else vec[type].emplace(vec[type].end(), val);
+		return true;
 	}
 	bool del(short type, int id) {
 		for (auto i = vec[type].begin(); i != vec[type].end(); i++) {
@@ -68,6 +51,67 @@ public:
 			}
 		}
 		return false;
+	}
+	int bsmall(short type, int val,bool *iffound) {
+		auto ve = &vec[type];
+		int s = 0;
+		int e = vec[type].size();
+		if ((*ve).begin()->second >= val) {
+			iffound = false;
+			return 0;
+		}
+		while (s > e) {
+			int mid = (s + e) / 2;
+			int z = (*ve)[mid].second;
+			if (z == val) {
+				while ((*ve)[--mid].second != val);
+				return mid;
+			}
+			else if (z > val) {
+				e = mid-1;
+			}
+			else {
+				s = mid;
+			}
+		}
+		if (s == e) {
+			return s;
+		}
+		return 0;
+
+	}
+	int sbig(short type, int val,bool *iffound) {
+		auto ve = &vec[type];
+		int s = 0;
+		int e = vec[type].size();
+		if (((*ve).begin()+(*ve).size()-1)->second <= val) {
+			iffound = false;
+			return 0;
+		}
+		while (s > e) {
+			int mid = (s + e) / 2;
+			int z = (*ve)[mid].second;
+			if (z == val) {
+				while ((*ve)[++mid].second != val);
+				return mid;
+			}
+			else if (z > val) {
+				e = mid;
+			}
+			else {
+				s = mid+1;
+			}
+		}
+		if (s == e) {
+			return s;
+		}
+		return 0;
+	}
+	decltype(auto) getStart(short type) {
+		return vec[type].begin();
+	}
+	decltype(auto) getEnd(short type) {
+		return vec[type].end();
 	}
 };
 
@@ -129,58 +173,51 @@ private:
 public:
 	std::queue<int> search(short type, int rows, int left, int right) {
 		std::queue<int> arr;
-		int le = left / SQUAREDISTANCE;
-		int ri = (right + SQUAREDISTANCE - 1) / SQUAREDISTANCE;
-		/*for (int i = le; i < +ri; i++) {
-			auto s = table[rows][i].getStart(type);
-			auto end = table[rows][i].getEnd(type);
-			while (s != end) {
-				if (s->second >= left && s->second <= right) {
-					arr.push(s->first);
-				}
-				s++;
-			}
-		}*/
+		if (table[rows].isEmpty(type)) return arr;
+		bool iffound;
+		auto s = table[rows].getStart(type)+ table[rows].bsmall(type, left, &iffound);
+		if (iffound) s++;
+
+		auto e = table[rows].getStart(type) + table[rows].sbig(type, right, &iffound);
+		if (!iffound) e = table[rows].getEnd(type);
+		while (s != e) {
+			arr.push(s->first);
+			s++;
+		}
 		return arr;
 	}
-	//std::queue<int> search(int rows, int center, bool(*cm)(int,int,int,int)) {
-	//	/*std::vector<int> arr;
-	//	for (int i = 0; i < ROWS; i++) {
-	//		for (int j = 0; j < COLUMNS; j++) {
-	//			if (cm(rows,center,i,table[i][j].position)) {
-	//				arr.push_back(table[i][j].id);
-	//			}
-	//		}
-	//	}
-	//	int array[arr.size()];
-	//	std::copy(arr.begin(), arr.end(), array);
-	//	return array;*/
-	//	std::queue<int> arr;
-	//	for (int i = 0; i < ROWS; i++) {
-	//		for (int j = 0; j < COLUMNS; j++) {
-
-	//		}
-	//	}
-	//}
-	int searchFirst(short type, int rows, int left, int right) {
-		int minid = 0;
-		int minpoi = right + 1;
-		int le = left / SQUAREDISTANCE;
-		int ri = (right + SQUAREDISTANCE - 1) / SQUAREDISTANCE;
-		for (int i = le; i < +ri; i++) {
-			/*	auto s = table[rows][i].getStart(type);
-				auto end = table[rows][i].getEnd(type);
-				while (s != end) {
-					if (s->second<minpoi&&s->second >= left && s->second <= right) {
-						minid = s->first;
-						minpoi = s->second;
-					}
-					s++;
-				}
-			}*/
-			return minid;
+	int searchFirst(short type, int rows, int left, int right,bool *iffound) {
+		if (table[rows].isEmpty(type)) {
+			*iffound = false;
+			return 0;
 		}
-		bool remove(int type);
+		bool iffoun;
+		auto s = table[rows].getStart(type);
+		int z = table[rows].bsmall(type, left, &iffoun);
+		if (iffoun) {
+			if (s+z+1 != table[rows].getEnd(rows) && s->second <= right) {
+				*iffound = true;
+				return s->first;
+			}
+			else {
+				*iffound = false;
+				return 0;
+			}
+		}
+		else {
+			if (s->second <= right) {
+				*iffound = true;
+				return s->first;
+			}
+			else {
+				*iffound = false;
+				return 0;
+			}
+		}
+	};
+	bool remove(int type,int rows,int id)
+	{
+		table[rows].del(type, id);
 	};
 };
 
