@@ -94,7 +94,7 @@ public:
 	}
 	
 	decltype(auto) getStart(short type) {
-		return con[type.begin()];
+		return con[type.begin(); ]
 	}
 	decltype(auto) getEnd(short type) {
 		return con[type].end();

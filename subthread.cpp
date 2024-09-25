@@ -34,6 +34,7 @@ private:
 	static std::queue<Pevent> list;
 	static std::mutex mut0;//¿ØÖÆlistµÄ
 	static std::condition_variable mut1;
+	static std::thread(process);
 };
 //to-do
 class ChangeTable {
