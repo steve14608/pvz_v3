@@ -36,12 +36,12 @@ private:
 	static std::condition_variable mut1;
 };
 //to-do
-class ChangeTable {
-private:
-	static std::queue<Change> que;
-public:
-	/*static void add(Change a) {
-		que.push(a);
-	}*/
-	//static handle
-};
+//class ChangeTable {
+//private:
+//	static std::queue<Change> que;
+//public:
+//	/*static void add(Change a) {
+//		que.push(a);
+//	}*/
+//	//static handle
+//};

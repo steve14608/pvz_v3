@@ -92,7 +92,7 @@ public:
 		Node* pointer = head->next;
 		while (index-- >= 0 && pointer != NULL) pointer = pointer->next;
 		if (index >= 0) return tail->val;
-		return pointer->val;
+		return pointer == NULL ? NULL : ponter->next;
 	}
 	class iterator {
 		Node* obj;
@@ -100,24 +100,36 @@ public:
 	public:
 		iterator(Node* ptr) :obj(ptr->next), head(ptr->next) {};
 		iterator() :obj(NULL), head(NULL) {};
-		void operator++() {
+		iterator operator++() {
 			if (obj != NULL) {
 				if (obj->next == NULL) obj = head;
 				else obj = obj->next;
 			}
+			return this;
 		}
-		void operator++(int i) {
+		iterator operator++(int i) {
 			if (obj != NULL) {
 				if (obj->next == NULL) obj = head;
 				else obj = obj->next;
 			}
+			return this;
+		}
+		iterator operator+(int i) {
+			if (obj == NULL) return NULL;
+			Node* zz = obj;
+			int z = i;
+			while (zz->next != NULL && z > 0) {
+				zz = zz->next;
+				z--;
+			}
+			return iterator(zz);
 		}
 		T operator*()const {
-			return obj->val;
+			return obj==NULL?NULL:obj->val;
 		}
 	};
 	iterator begin() {
-		return iterator(this->head);
+		return iterator(this->head->next);
 	}
 };
 
@@ -352,7 +364,7 @@ private:
 	CycleLinkedList<CycleLinkedList<IMAGE>> piclist;
 	//CycleLinkedList<> sndlist;
 public:
-	ResourceManager(char* na) :name(na) {
+	void init(const char* na) {
 		//文件系统
 		char pathh[30];
 		strcat(pathh, "pic\\");
