@@ -36,7 +36,7 @@ inline static void putimage_transperant(int x, int y, IMAGE* img) {
 enum Entities {
 	Sunflower, Peeshooter, Nutwall, Potatolandmine,
 	Normal, Bucket,
-	Pee
+	SunPower,Pee
 };
 
 //循环链表，即迭代器循环遍历链表
@@ -126,6 +126,9 @@ public:
 		}
 		T operator*()const {
 			return obj==NULL?NULL:obj->val;
+		}
+		bool isLastFrame() {
+			return obj->next == NULL;
 		}
 	};
 	iterator begin() {
@@ -395,39 +398,46 @@ public:
 
 
 
-class GameTickControl {
+class GameRunTime {
 private:
 	static DWORD tick;
 	static DWORD last;
 	static const DWORD frame = 40;
-public:
-	static void init() {
-		GameTickControl::tick = 0;
-	}
-	inline static void begin() {
-		GameTickControl::last = GetTickCount();
-	}
-	inline static void end() {
-		DWORD z = GetTickCount() - GameTickControl::last - GameTickControl::frame;
-		if (z > 0)Sleep(z);
-		GameTickControl::tick++;
-		GameTickControl::last = GetTickCount();
-	}
-	inline static DWORD getTick() {
-		return GameTickControl::tick;
-	}
-};
+	static int id;
 
-
-
-class IDAssignment {
-private:
-	int id = 0;
-public:
-	int assignID() {
+	static int assignID() {
 		return id++;
 	}
+	static EntityUnit create() {
+		return EntityUnit();
+	}
+public:
+	static void init() {
+		GameRunTime::tick = 0;
+		GameRunTime::id = 0;
+	}
+	inline static void begin() {
+		GameRunTime::last = GetTickCount();
+	}
+	inline static void end() {
+		DWORD z = GetTickCount() - GameRunTime::last - GameRunTime::frame;
+		if (z > 0)Sleep(z);
+		GameRunTime::tick++;
+		GameRunTime::last = GetTickCount();
+	}
+	inline static DWORD getTick() {
+		return GameRunTime::tick;
+	}
+	inline static bool addEntity(Pool<EntityUnit> a, Table b, EntityUnit* c) {
+
+	}
+	inline static EntityUnit requestEntityUnit() {
+
+	}
 };
+
+
+
 
 
 
