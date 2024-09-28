@@ -54,8 +54,8 @@ public:
 		head = new Node(NULL);
 		tail = head;
 	}
-	void destroy() {
-		delete this;
+	~CycleLinkedList() {
+
 	}
 	bool isempty() {
 		return head->next == NULL;
@@ -137,19 +137,22 @@ public:
 //类Table的基本单元
 class TableUnit {
 private:
-	std::vector<std::pair<int, int>> vec[3];
+	std::vector<std::pair<short, short>> vec[3];
+	~TableUnit() {
+
+	}
 public:
 	bool isEmpty(short type) {
 		return vec[type].empty();
 	}
-	bool add(short type, std::pair<int, int> val) {
+	bool add(byte type, std::pair<unsigned short, byte> val) {
 		bool iffound;
 		int an = sbig(type, val.second, &iffound);
 		if (iffound) vec[type].emplace(vec[type].begin() + an, val);
 		else vec[type].emplace(vec[type].end(), val);
 		return true;
 	}
-	bool del(short type, int id) {
+	bool del(byte type, unsigned short id) {
 		for (auto i = vec[type].begin(); i != vec[type].end(); i++) {
 			if (i->first == id) {
 				auto it = &(i->second);
@@ -160,7 +163,7 @@ public:
 		}
 		return false;
 	}
-	int bsmall(short type, int val, bool* iffound) {
+	int bsmall(byte type, byte val, bool* iffound) {
 		auto ve = &vec[type];
 		int s = 0;
 		int e = vec[type].size();
@@ -188,7 +191,7 @@ public:
 		return 0;
 
 	}
-	int sbig(short type, int val, bool* iffound) {
+	int sbig(byte type, byte val, bool* iffound) {
 		auto ve = &vec[type];
 		int s = 0;
 		int e = vec[type].size();
@@ -215,10 +218,10 @@ public:
 		}
 		return 0;
 	}
-	decltype(auto) getStart(short type) {
+	decltype(auto) getStart(byte type) {
 		return vec[type].begin();
 	}
-	decltype(auto) getEnd(short type) {
+	decltype(auto) getEnd(byte type) {
 		return vec[type].end();
 	}
 };
@@ -235,30 +238,24 @@ template<class T> class Pool {
 private:
 	std::map<int, T> con[3];
 	RecyclePool<T>* recy;
-	~Pool() {
-
-	}
 public:
-	void input(short type, T& a) {
+	void input(byte type, T& a) {
 		con[type][T.id] = T;
 	}
 
-	T& output(short type, int id) {
+	T& output(byte type, unsigned short id) {
 		auto it = con[type].find(id);
 		T tt = it->second;
 		con[type].erase(it);
 		return tt;
 	}
-	void destroy() {
-		destroy this;
-	}
-	decltype(auto) getStart(short type) {
+	decltype(auto) getStart(byte type) {
 		return con[type.begin()];
 	}
-	decltype(auto) getEnd(short type) {
+	decltype(auto) getEnd(byte type) {
 		return con[type].end();
 	}
-	T& getElement(int id, short type, bool* iffound)//0plants，1zombies,2bullets
+	T& getElement(unsigned short id, byte type, bool* iffound)//0plants，1zombies,2bullets
 	{
 		auto z = con[type].find(id);
 		if (z != con[type].end()) {
@@ -290,33 +287,38 @@ public:
 //按行的，为了便于按位置查找而设置的数据结构
 class Table {
 private:
-	TableUnit table[ROWS];
+	TableUnit *table[ROWS];
 public:
-	std::queue<int> search(short type, int rows, int left, int right) {
-		std::queue<int> arr;
-		if (table[rows].isEmpty(type)) return arr;
+	Table() {
+		for (byte i = 0; i < ROWS; i++) {
+			table[i] = new TableUnit();
+		}
+	}
+	std::queue<short> search(byte type, byte rows, byte left, byte right) {
+		std::queue<short> arr;
+		if (table[rows]->isEmpty(type)) return arr;
 		bool iffound;
-		auto s = table[rows].getStart(type) + table[rows].bsmall(type, left, &iffound);
+		auto s = table[rows]->getStart(type) + table[rows]->bsmall(type, left, &iffound);
 		if (iffound) s++;
 
-		auto e = table[rows].getStart(type) + table[rows].sbig(type, right, &iffound);
-		if (!iffound) e = table[rows].getEnd(type);
+		auto e = table[rows]->getStart(type) + table[rows]->sbig(type, right, &iffound);
+		if (!iffound) e = table[rows]->getEnd(type);
 		while (s != e) {
 			arr.push(s->first);
 			s++;
 		}
 		return arr;
 	}
-	int searchFirst(short type, int rows, int left, int right, bool* iffound) {
-		if (table[rows].isEmpty(type)) {
+	int searchFirst(byte type, byte rows, byte left, byte right, bool* iffound) {
+		if (table[rows]->isEmpty(type)) {
 			*iffound = false;
 			return 0;
 		}
 		bool iffoun;
-		auto s = table[rows].getStart(type);
-		int z = table[rows].bsmall(type, left, &iffoun);
+		auto s = table[rows]->getStart(type);
+		int z = table[rows]->bsmall(type, left, &iffoun);
 		if (iffoun) {
-			if (s + z + 1 != table[rows].getEnd(rows) && s->second <= right) {
+			if (s + z + 1 != table[rows]->getEnd(rows) && s->second <= right) {
 				*iffound = true;
 				return s->first;
 			}
@@ -336,9 +338,12 @@ public:
 			}
 		}
 	};
-	bool remove(int type, int rows, int id) {
-		table[rows].del(type, id);
+	bool remove(byte type, byte rows,unsigned short id) {
+		table[rows]->del(type, id);
 	};
+	bool add(byte type, byte rows,unsigned short id,byte poi) {
+		return table[rows]->add(type, std::pair<int, int>(id, poi));
+	}
 };
 
 
@@ -378,7 +383,6 @@ class ResourceManager {
 private:
 	char* name;
 	CycleLinkedList<CycleLinkedList<IMAGE>> piclist;
-	~ResourceManager() {}
 public:
 	void init(const char* na) {
 		//文件系统
@@ -401,11 +405,8 @@ public:
 			}
 		}
 	}
-	decltype(auto) getPicSequence(int type) {
+	decltype(auto) getPicSequence(byte type) {
 		return piclist.get(type).begin();
-	}
-	void destroy() {
-		delete this;
 	}
 };
 
@@ -417,10 +418,11 @@ class GameRunTime {
 private:
 	static DWORD tick;
 	static DWORD last;
-	static const DWORD frame = 40;
-	static int id;
+	static const byte frame = 40;
+	static unsigned short id;
+	static std::map<Entities, Entity>* entitymapp;
 
-	static int assignID() {
+	static short assignID() {
 		return id++;
 	}
 	static EntityUnit* create() {
@@ -430,6 +432,7 @@ public:
 	static void init() {
 		GameRunTime::tick = 0;
 		GameRunTime::id = 0;
+		GameRunTime::entitymapp = new std::map<Entities,Entity>();
 	}
 	inline static void begin() {
 		GameRunTime::last = GetTickCount();
@@ -452,6 +455,17 @@ public:
 			return GameRunTime::create();
 		}
 		else return &re->output();
+	}
+	static void refreshEntityMap() {
+		delete GameRunTime::entitymapp;
+		GameRunTime::entitymapp = new std::map<Entities, Entity>();
+	}
+	static Entity* requestEntityPointer(Entities a) {
+		auto z = GameRunTime::entitymapp->find(a);
+		if (z == GameRunTime::entitymapp->end()) {
+
+		}
+		else return &(z->second);
 	}
 };
 
