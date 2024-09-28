@@ -4,7 +4,17 @@
 
 
 
-Entity::Entity(){}
+
+
+Entity::Entity()
+{
+	res = new ResourceManager();
+}
+
+Entity::~Entity()
+{
+	res->destroy();
+}
 
 bool Entity::sound(EntityUnit selff) {
 	return false;
@@ -13,17 +23,17 @@ IMAGE *Entity::render(EntityUnit selff) {
 	return  &*selff.getIterator();
 }
 
-bool Entity::attack(Pool<EntityUnit> a, Table b, EntityUnit selff)
+bool Entity::attack(Pool<EntityUnit> *a, Table b, EntityUnit selff)
 {
 	return false;
 }
 
-bool Entity::skill(Pool<EntityUnit> a, Table b, EntityUnit selff)
+bool Entity::skill(Pool<EntityUnit> *a, Table b, EntityUnit selff)
 {
 	return false;
 }
 
-bool Entity::motion(Pool<EntityUnit> a, Table b, EntityUnit selff)
+bool Entity::motion(Pool<EntityUnit> *a, Table b, EntityUnit selff)
 {
 	return false;
 }
@@ -31,7 +41,7 @@ bool Entity::motion(Pool<EntityUnit> a, Table b, EntityUnit selff)
 void Entity::initEntityUnit(EntityUnit& a)
 {
 	a.setAnimeType(1);
-	a.setAnimeIterator(res.getPicSequence(1));
+	a.setAnimeIterator(res->getPicSequence(1));
 	a.setLastAck(GameRunTime::getTick());
 	a.setLastSkl(GameRunTime::getTick());
 }
@@ -180,7 +190,7 @@ Pee::Pee()
 {
 }
 
-bool Pee::attack(Pool<EntityUnit> a, Table b)
+bool Pee::attack(Pool<EntityUnit> *a, Table b)
 {
 	return false;
 }
@@ -188,7 +198,7 @@ bool Pee::attack(Pool<EntityUnit> a, Table b)
 
 SunPower::SunPower() {
 	type = Entities::SunPower;
-	res.init("SunPower");
+	res->init("SunPower");
 }
 bool SunPower::skill(int *a)
 {
@@ -196,7 +206,7 @@ bool SunPower::skill(int *a)
 	return false;
 }
 
-bool SunPower::motion(Pool<EntityUnit> a, Table b, EntityUnit selff)
+bool SunPower::motion(Pool<EntityUnit> *a, Table b, EntityUnit selff)
 {
 	int z = GameRunTime::getTick() - selff.getLastSkl();
 	int aa, bb;
@@ -226,13 +236,14 @@ Sunflower::Sunflower()
 	maxHealth = 10;
 	type = Entities::Sunflower;
 	skillInterval = 30;
-	res.init("Sunflower");
+	res->init("Sunflower");
 }
 
-bool Sunflower::skill(Pool<EntityUnit> a, Table b, EntityUnit selff)
+bool Sunflower::skill(Pool<EntityUnit> *a, Table b, EntityUnit selff)
 {
 	if (GameRunTime::getTick() - selff.getLastSkl() > skillInterval) {
-		//
+		auto z = GameRunTime::requestEntityUnit(a);
+		
 	}
 }
 

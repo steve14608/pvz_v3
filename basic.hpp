@@ -39,7 +39,7 @@ enum Entities {
 	SunPower,Pee
 };
 
-//循环链表，即迭代器循环遍历链表
+//循环链表，即迭代器循环遍历链表，记得在堆开辟
 template <class T> class CycleLinkedList {
 private:
 	struct Node {
@@ -54,13 +54,8 @@ public:
 		head = new Node(NULL);
 		tail = head;
 	}
-	~CycleLinkedList() {
-		Node* p = head->next;
-		while (p != NULL) {
-			delete head;
-			head = p;
-			p = p->next;
-		}
+	void destroy() {
+		delete this;
 	}
 	bool isempty() {
 		return head->next == NULL;
@@ -234,11 +229,15 @@ public:
 
 
 
-
-//运行时实体池子，记录了所有实体的基本实例信息，按id查找
+template <class T> class RecyclePool;
+//运行时实体池子，记录了所有实体的基本实例信息，按id查找,destroy
 template<class T> class Pool {
 private:
 	std::map<int, T> con[3];
+	RecyclePool<T>* recy;
+	~Pool() {
+
+	}
 public:
 	void input(short type, T& a) {
 		con[type][T.id] = T;
@@ -250,7 +249,9 @@ public:
 		con[type].erase(it);
 		return tt;
 	}
-
+	void destroy() {
+		destroy this;
+	}
 	decltype(auto) getStart(short type) {
 		return con[type.begin()];
 	}
@@ -266,6 +267,12 @@ public:
 		}
 		*iffound = false;
 		return NULL;
+	}
+	void setRecyclePool(RecyclePool<T>* po) {
+		recy = po;
+	}
+	RecyclePool<T>* getRecyclePool() {
+		return po;
 	}
 };
 
@@ -342,9 +349,15 @@ public:
 template <class T> class RecyclePool {
 private:
 	std::queue<T> que;
+	~RecyclePool() {
+
+	}
 public:
 	bool isEmpty() {
 		return que.empty();
+	}
+	void destroy() {
+		delete this;
 	}
 	bool input(T a) {
 		que.push(a);
@@ -365,7 +378,7 @@ class ResourceManager {
 private:
 	char* name;
 	CycleLinkedList<CycleLinkedList<IMAGE>> piclist;
-	//CycleLinkedList<> sndlist;
+	~ResourceManager() {}
 public:
 	void init(const char* na) {
 		//文件系统
@@ -391,7 +404,9 @@ public:
 	decltype(auto) getPicSequence(int type) {
 		return piclist.get(type).begin();
 	}
-
+	void destroy() {
+		delete this;
+	}
 };
 
 
@@ -408,8 +423,8 @@ private:
 	static int assignID() {
 		return id++;
 	}
-	static EntityUnit create() {
-		return EntityUnit();
+	static EntityUnit* create() {
+		return new EntityUnit();
 	}
 public:
 	static void init() {
@@ -431,8 +446,12 @@ public:
 	inline static bool addEntity(Pool<EntityUnit> a, Table b, EntityUnit* c) {
 
 	}
-	inline static EntityUnit requestEntityUnit() {
-
+	inline static EntityUnit *requestEntityUnit(Pool<EntityUnit> *pool) {
+		auto re = pool->getRecyclePool();
+		if ((*re).isEmpty()) {
+			return GameRunTime::create();
+		}
+		else return &re->output();
 	}
 };
 

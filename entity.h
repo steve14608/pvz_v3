@@ -6,11 +6,12 @@ class EntityUnit;
 class Entity {
 public:
 	Entity();
+	~Entity();
 	virtual bool sound(EntityUnit selff);
 	virtual IMAGE *render(EntityUnit selff);
-	virtual bool attack(Pool<EntityUnit> a, Table b, EntityUnit selff);
-	virtual bool skill(Pool<EntityUnit> a, Table b, EntityUnit selff);
-	virtual bool motion(Pool<EntityUnit> a, Table b, EntityUnit selff);
+	virtual bool attack(Pool<EntityUnit> *a, Table b, EntityUnit selff);
+	virtual bool skill(Pool<EntityUnit> *a, Table b, EntityUnit selff);
+	virtual bool motion(Pool<EntityUnit> *a, Table b, EntityUnit selff);
 	virtual void initEntityUnit(EntityUnit& a);
 	Entities getType()const;
 	int getHealth()const;
@@ -21,7 +22,7 @@ protected:
 	int maxHealth;
 	DWORD attackInterval;
 	DWORD skillInterval;
-	ResourceManager res;
+	ResourceManager *res;
 };
 
 class EntityUnit {
@@ -62,14 +63,14 @@ private:
 class Pee:public Entity {
 public:
 	Pee();
-	bool attack(Pool<EntityUnit> a, Table b);
+	bool attack(Pool<EntityUnit> *a, Table b);
 };
 
 
 class SunPower :public Entity {
 	SunPower();
 	bool skill(int *a);
-	bool motion(Pool<EntityUnit> a, Table b, EntityUnit selff);
+	bool motion(Pool<EntityUnit> *a, Table b, EntityUnit selff);
 	void initEntityUnit(EntityUnit& a);
 };
 
@@ -80,5 +81,5 @@ class Sunflower :public Entity {
 public:
 	static const int cost = 50;
 	Sunflower();
-	bool skill(Pool<EntityUnit> a,Table b,EntityUnit selff);
+	bool skill(Pool<EntityUnit> *a,Table b,EntityUnit selff);
 };
